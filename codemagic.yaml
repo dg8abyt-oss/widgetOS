@@ -1,0 +1,35 @@
+workflows:
+  ios-unsigned-build:
+    name: Build Unsigned IPA
+    environment:
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: 🛠 Install XcodeGen & Generate Project
+        script: |
+          brew install xcodegen
+          xcodegen generate
+          # Verify the project was created
+          ls -l Canvas.xcodeproj
+
+      - name: 📦 Build Unsigned IPA
+        script: |
+          mkdir Payload
+          
+          # Build the App using the generated project
+          xcodebuild build \
+            -project Canvas.xcodeproj \
+            -scheme Canvas \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath build_output \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+          # Move the compiled app into Payload for zipping
+          cp -r build_output/Build/Products/Release-iphoneos/Canvas.app Payload/
+
+          # Zip it into an IPA
+          zip -r Canvas_Unsigned.ipa Payload
+    artifacts:
+      - Canvas_Unsigned.ipa
