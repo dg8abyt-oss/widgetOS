@@ -1,0 +1,35 @@
+name: Build Unsigned IPA
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build App Object
+        run: |
+          # Compiles the app without needing a signing certificate
+          xcodebuild build \
+            -scheme Canvas \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Create Payload Folder
+        run: |
+          mkdir Payload
+          # Find the compiled .app file and move it into Payload
+          # Adjust the path below if your build output is different
+          cp -r build/Release-iphoneos/Canvas.app Payload/
+
+      - name: Zip into IPA
+        run: zip -r Canvas_Unsigned.ipa Payload
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Canvas-Unsigned-IPA
+          path: Canvas_Unsigned.ipa
