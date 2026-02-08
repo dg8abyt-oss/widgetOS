@@ -1,0 +1,34 @@
+name: Canvas
+options:
+  bundleIdPrefix: com.yourname
+targets:
+  Canvas:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: 
+      - path: CanvasApp.swift
+      - path: EditorView.swift
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.yourname.canvas
+      INFOPLIST_KEY_CFBundleDisplayName: "Canvas"
+      INFOPLIST_KEY_UILaunchScreen_UIColorName: "background"
+      # Critical for Unsigned Builds
+      CODE_SIGNING_ALLOWED: NO
+      CODE_SIGNING_REQUIRED: NO
+      AD_HOC_CODE_SIGNING_ALLOWED: YES
+    dependencies:
+      - target: CanvasWidget
+
+  CanvasWidget:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: WidgetExtension.swift
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.yourname.canvas.widget
+      INFOPLIST_KEY_NSExtension:
+        NSExtensionPointIdentifier: "com.apple.widgetkit-extension"
+      CODE_SIGNING_ALLOWED: NO
+      CODE_SIGNING_REQUIRED: NO
